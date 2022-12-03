@@ -52,6 +52,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
+        if (m_RightClick)
+        {
+            float faceCamera = Mathf.SmoothDampAngle(transform.eulerAngles.y, m_YRot, ref m_TurnSmoothVel, Constants.PLAYER_TURN_SPEED);
+            transform.rotation = Quaternion.Euler(0, faceCamera, 0);
+        }
         Vector3 dir = new Vector3(m_MovementInput.x, 0, m_MovementInput.y).normalized;
         Quaternion rot = Quaternion.Euler(transform.rotation.x, m_YRot, transform.rotation.z);
         dir *= m_Speed;
