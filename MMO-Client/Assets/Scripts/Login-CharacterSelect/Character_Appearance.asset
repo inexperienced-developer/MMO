@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5da58ed64cdeb2f428dca84d7fcbb4c7, type: 3}
+  m_Name: Character_Appearance
+  m_EditorClassIdentifier: 
+  BodyMats:
+  - {fileID: 2100000, guid: eda035b6f9f64a62b45284ffda0fdb66, type: 2}
+  - {fileID: 2100000, guid: 18397306d96f420c843f4f348f9c9e5e, type: 2}
+  - {fileID: 2100000, guid: 682dc6e2462e4a70b76064612a5c97d2, type: 2}
+  - {fileID: 2100000, guid: 9c0d686ffb5b424097c303685ee3d27e, type: 2}
+  - {fileID: 2100000, guid: e2e9d311630547f59dc11d9fd64f9920, type: 2}
+  ShirtMats:
+  - {fileID: 2100000, guid: dfd99870ed4141ca976ba73c0b86b84e, type: 2}
+  - {fileID: 2100000, guid: 6b495f01c1e64117af96131610f17e37, type: 2}
+  - {fileID: 2100000, guid: 4964559e5e754d1592b967ca18dfca88, type: 2}
+  PantsMats:
+  - {fileID: 2100000, guid: e383432d09974cca9d64755409765bb3, type: 2}
+  - {fileID: 2100000, guid: 71a18661fe5d4d28a872d600688f561a, type: 2}
+  HeadMats:
+  - {fileID: 2100000, guid: ad0a114125d24116ab19245ba869b7b6, type: 2}
+  - {fileID: 2100000, guid: e5ef3a879d08408b899c4db2feec4d68, type: 2}
+  - {fileID: 2100000, guid: 265f10f1a627493eb7ee748cfc6aa25d, type: 2}
+  - {fileID: 2100000, guid: fcb1be3aa6b241aa81e722312ac8c9ad, type: 2}
+  - {fileID: 2100000, guid: 6905d4104d4a4ce5a2c359c6c8ffc237, type: 2}
+  EyeMats:
+  - {fileID: 2100000, guid: 0845abed288c40a8a8ad15199052c715, type: 2}
+  - {fileID: 2100000, guid: 308b82eadd6a4b08bdd755d643a4d746, type: 2}
+  - {fileID: 2100000, guid: 5a1b98f2b83846ac9feae91c0feb5e8b, type: 2}
+  - {fileID: 2100000, guid: 96f73f587316491683d93b8d52e272fc, type: 2}
+  HairStyles:
+  - {fileID: 9087277494882950640, guid: 469ae73941ef6b443b14cc5325326afb, type: 3}
+  - {fileID: 6479808021368066716, guid: 4182e248760ecd14e88d282ffab3e45d, type: 3}
+  - {fileID: 5202376747965742859, guid: 8f086033719df4644a33afcf62c97b9e, type: 3}
+  - {fileID: 6525196499103887190, guid: 05e2680f42a02c24eb26236cf5b54355, type: 3}
+  - {fileID: 6893986747934915523, guid: 7a83ceeac3abe074f8d17031bd924992, type: 3}
+  HairMatsType1:
+  - {fileID: 2100000, guid: a096c0af7b2f44d2820923ea6eb661c4, type: 2}
+  - {fileID: 2100000, guid: 78f56a473ec94ff0b59b09fe384172b4, type: 2}
+  - {fileID: 2100000, guid: 759ed711fecc45898a817cfc93b461ca, type: 2}
+  - {fileID: 2100000, guid: 5083b78ee37e4cc1abcee9261588176b, type: 2}
+  HairMatsType2:
+  - {fileID: 2100000, guid: 8e9e7d9e7f534cea99474c641c09c528, type: 2}
+  - {fileID: 2100000, guid: b20025213cf44b808195344fade8871a, type: 2}
+  - {fileID: 2100000, guid: 00059499a81b423ca88cf9b91b96d748, type: 2}
+  - {fileID: 2100000, guid: 8e1ba233123c4a079ccd48ed9cbd4db1, type: 2}
+  EyebrowStyles:
+  - {fileID: 919132149155446097, guid: bd99dd4afc1e4702bb793d19b01b633c, type: 3}
+  - {fileID: 919132149155446097, guid: 3906be2cbc254945b9feedfde33d4523, type: 3}
+  - {fileID: 919132149155446097, guid: 68479df6d54a46248a93338b18403127, type: 3}
+  - {fileID: 919132149155446097, guid: a0e10ed224884827815b071f55fdb675, type: 3}
+  BeardStyles:
+  - {fileID: 919132149155446097, guid: 7380e2c356b34a8d9fd203357d88dd7e, type: 3}
+  - {fileID: 919132149155446097, guid: 157456a9bac148aa9d121f79828bf96b, type: 3}
+  - {fileID: 919132149155446097, guid: 94812968ab8f449fab80613372857109, type: 3}
+  - {fileID: 919132149155446097, guid: 7e379e3f9ee04f8ea773402cf19beeab, type: 3}
+  - {fileID: 919132149155446097, guid: 3c2edb8e076e4832a6c4712bdb3e7bc0, type: 3}
+  - {fileID: 919132149155446097, guid: fc248f0d9c60426c92dcc20bb02c512f, type: 3}
+  EyebrowsAndBeardMats:
+  - {fileID: 2100000, guid: 008d049291974134b5666d6e5fd6c5a5, type: 2}
+  - {fileID: 2100000, guid: 06a36a82d97a4d7a8581e0e55456ffa2, type: 2}
+  - {fileID: 2100000, guid: fde1562babb54a31b1d0febf655ce9e0, type: 2}
+  - {fileID: 2100000, guid: 43ac2d0658cd458c8df6e0a44e15f60a, type: 2}

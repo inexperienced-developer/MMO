@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "723440256733",
+    "project_id": "mmo-unti",
+    "storage_bucket": "mmo-unti.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:723440256733:android:2c9e6a927ff2c32f12fd34",
+        "android_client_info": {
+          "package_name": "com.InexperiencedDeveloper.Wars"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "723440256733-alnqajqin4h23jkge5muparc877qi2bs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeiB_70R34yfAPxavs8Ohx290-ClJelFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "723440256733-alnqajqin4h23jkge5muparc877qi2bs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

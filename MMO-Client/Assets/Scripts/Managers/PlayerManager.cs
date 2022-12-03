@@ -1,0 +1,242 @@
+using InexperiencedDeveloper.Core;
+using InexperiencedDeveloper.MMO.Data;
+using InexperiencedDeveloper.Utils;
+using InexperiencedDeveloper.Utils.Log;
+using Riptide;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using UnityEngine;
+
+public class PlayerManager : Singleton<PlayerManager>
+{
+    private static Dictionary<ushort, Player> m_PlayerList = new();
+    private static Dictionary<ushort, InGamePlayer> m_InGamePlayerList = new();
+    private static Player m_LocalPlayer;
+
+    public static void RemovePlayerFromList(Player sender)
+    {
+        m_PlayerList.Remove(sender.Id);
+    }
+
+    public static void AddPlayerToList(Player sender)
+    {
+        m_PlayerList.Add(sender.Id, sender);
+    }
+
+    public static Player GetLocalPlayer()
+    {
+        return m_LocalPlayer;
+    }
+
+    private static void Initialize(ushort id, List<CharacterAppearanceData> data, string email)
+    {
+        if (m_LocalPlayer != null)
+        {
+            LobbyPlayer localLobbyPlayer = (LobbyPlayer)m_LocalPlayer;
+            localLobbyPlayer.SetCharacterList(data);
+            localLobbyPlayer.Init(id, email);
+            return;
+        }
+        GameObject go = new GameObject();
+        LobbyPlayer player = go.AddComponent<LobbyPlayer>();
+        player.name = $"Player {id} ({(string.IsNullOrEmpty(email) ? "Invalid name" : email)})";
+        player.SetCharacterList(data);
+        player.Init(id, email);
+        if (id == NetworkManager.Instance.Client.Id) m_LocalPlayer = player;
+    }
+
+    private static void Spawn(ushort id, byte geoArea, Vector3 pos, Quaternion rot, List<ushort> gear, CharacterAppearanceData data)
+    {
+        LevelManager.Instance.SetLevelToLoad(geoArea);
+        InGamePlayer player = null;
+        if(id == NetworkManager.Instance.Client.Id)
+        {
+            CharacterBuilder newChar = CharacterBuilderManager.Instance.CreateNewCharacter(pos, rot);
+            GameObject go = newChar.gameObject;
+            newChar.SetCharacterAppearance((SkinColor)data.SkinColor, (HairColor)data.HairColor, (HairStyle)data.HairStyle,
+                (FacialHairStyle)data.FacialHairStyle, (EyebrowStyle)data.EyebrowStyle, (EyeColor)data.EyeColor, data.BootsOn,
+                data.ShirtOn, data.PantsOn);
+            player = go.AddComponent<InGamePlayer>();
+            player.Init(id, GameManager.Email);
+            player.name = $"Player {id} ({data.Name}) -- LOCAL PLAYER";
+            if (m_InGamePlayerList.ContainsKey(id))
+                m_InGamePlayerList[id] = player;
+            else
+                m_InGamePlayerList.Add(id, player);
+            LevelManager.Loaded = true;
+        }
+        else
+        {
+            CharacterBuilder newChar = CharacterBuilderManager.Instance.CreateNewCharacter(pos, rot);
+            GameObject go = newChar.gameObject;
+            newChar.SetCharacterAppearance((SkinColor)data.SkinColor, (HairColor)data.HairColor, (HairStyle)data.HairStyle,
+                (FacialHairStyle)data.FacialHairStyle, (EyebrowStyle)data.EyebrowStyle, (EyeColor)data.EyeColor, data.BootsOn,
+                data.ShirtOn, data.PantsOn);
+            player = go.AddComponent<InGamePlayer>();
+            player.Init(id);
+            player.name = $"Player {id} ({data.Name})";
+            if (m_InGamePlayerList.ContainsKey(id))
+                m_InGamePlayerList[id] = player;
+            else
+                m_InGamePlayerList.Add(id, player);
+        }
+        IDLogger.Log($"{data.Name} on Player List: {m_InGamePlayerList.ContainsKey(id)}");
+    }
+
+    public void MovePlayersToScene(int level)
+    {
+        foreach (Player p in m_PlayerList.Values)
+        {
+            LevelManager.Instance.MoveGameObjectToScene(level, p);
+        }
+    }
+
+    #region Messages
+
+    //-------------------------------------------------------------------------------------//
+    //---------------------------- Message Sending ----------------------------------------//
+    //-------------------------------------------------------------------------------------//
+
+    public void SendCreatedNewCharacter(CharacterAppearanceData data)
+    {
+        Message msg = Message.Create(MessageSendMode.Reliable, (ushort)ClientToServerId.CreateNewCharacter);
+        IDLogger.Log("Sending new character request");
+        msg = AddCharacterAppearanceMessage(msg, data);
+        NetworkManager.Instance.Client.Send(msg);
+    }
+    private Message AddCharacterAppearanceMessage(Message msg, CharacterAppearanceData data)
+    {
+        msg.AddString(data.Name);
+        msg.AddByte(data.Level);
+        msg.AddUShort(data.TotalLevel);
+        msg.AddByte(data.SkinColor);
+        msg.AddByte(data.HairColor);
+        msg.AddByte(data.HairStyle);
+        msg.AddByte(data.FacialHairStyle);
+        msg.AddByte(data.EyebrowStyle);
+        msg.AddByte(data.EyeColor);
+        byte appearanceByte = Utilities.BoolsToByte(new bool[3] { data.PantsOn, data.ShirtOn, data.BootsOn });
+        msg.AddByte(appearanceByte);
+        return msg;
+    }
+    
+    public void DeleteCharacter()
+    {
+        LobbyPlayer lobbyPlayer = (LobbyPlayer)m_LocalPlayer;
+        Message msg = Message.Create(MessageSendMode.Reliable, (ushort)ClientToServerId.DeleteCharacter);
+        string charName = lobbyPlayer.SelectedCharacter.Name;
+        string email = lobbyPlayer.Email;
+        msg.AddString(email);
+        msg.AddString(charName);
+        NetworkManager.Instance.Client.Send(msg);
+        lobbyPlayer.DeleteCharacter();
+    }
+
+    public void RequestSpawnPlayer(string email, string characterName)
+    {
+        Message msg = Message.Create(MessageSendMode.Reliable, (ushort)ClientToServerId.RequestSpawn);
+        msg.AddString(email);
+        msg.AddString(characterName);
+        NetworkManager.Instance.Client.Send(msg);
+    }
+
+    //-------------------------------------------------------------------------------------//
+    //---------------------------- Message Handlers ---------------------------------------//
+    //-------------------------------------------------------------------------------------//
+    [MessageHandler((ushort)ServerToClientId.AccountCharacterData)]
+    private static void ReceiveCharacterData(Message msg)
+    {
+        IDLogger.Log("Receiving Data");
+        ushort id = msg.GetUShort();
+        string email = msg.GetString();
+        byte length = msg.GetByte();
+        IDLogger.Log($"Length: {length}");
+        List<CharacterAppearanceData> data = ReceiveDataList(msg, length);
+        Initialize(id, data, email);    
+    }
+
+    private static List<CharacterAppearanceData> ReceiveDataList(Message msg, byte length = 1)
+    {
+        List<CharacterAppearanceData> data = new List<CharacterAppearanceData>();
+        for (byte i = 0; i < length; i++)
+        {
+            string name = msg.GetString();
+            byte level = msg.GetByte();
+            ushort totalLevel = msg.GetUShort();
+            byte skinColor = msg.GetByte();
+            byte hairColor = msg.GetByte();
+            byte hairStyle = msg.GetByte();
+            byte facialHairStyle = msg.GetByte();
+            byte eyebrowStyle = msg.GetByte();
+            byte eyeColor = msg.GetByte();
+            byte appearanceByte = msg.GetByte();
+            bool[] appearanceBools = Utilities.ByteToBools(appearanceByte, 3);
+            CharacterAppearanceData charData = new CharacterAppearanceData(name, level, totalLevel,
+                skinColor, hairColor, hairStyle, facialHairStyle, eyebrowStyle, eyeColor,
+                appearanceBools[2], appearanceBools[1], appearanceBools[0]);
+            data.Add(charData);
+        }
+        return data;
+    }
+    
+    [MessageHandler((ushort)ServerToClientId.SpawnPlayer)]
+    private static void SpawnPlayer(Message msg)
+    {
+        ushort id = msg.GetUShort();
+        byte geoArea = msg.GetByte();
+        Vector3 pos = msg.GetVector3Int();
+        Quaternion rot = msg.GetQuaternionInt();
+        byte gearLength = msg.GetByte();
+        List<ushort> gear = new(); 
+        for(int i = 0; i < gearLength; i++)
+        {
+            gear.Add(msg.GetUShort());
+        }
+        CharacterAppearanceData data = ReceiveDataList(msg)[0];
+        Spawn(id, geoArea, pos, rot, gear, data);
+    }
+
+    [MessageHandler((ushort)ServerToClientId.SendInventory)]
+    private static void ReceiveInventory(Message msg)
+    {
+        byte inventoryLength = msg.GetByte();
+        byte inventorySize = msg.GetByte();
+        List<ushort> inventory = new();
+        for(int i = 0; i < inventoryLength - 1; i++)
+        {
+            inventory.Add(msg.GetUShort());
+        }
+        //NEED TO DO SOMETHING WITH THIS
+    }
+
+    [MessageHandler((ushort)ServerToClientId.UpdatePosition)]
+    private static void ReceiveMovement(Message msg)
+    {
+        ushort id = msg.GetUShort();
+        IDLogger.Log($" Received movement {id}");
+        Vector3 pos = msg.GetVector3Int();
+        byte inputByte = msg.GetByte();
+        bool[] input = Utilities.ByteToBools(inputByte, 7);
+        float x = input[0] ? 1 : 0;
+        x = input[1] ? -1 : x;
+        float y = input[2] ? 1 : 0;
+        y = input[3] ? -1 : y;
+        if (x > 0 && y > 0)
+        {
+            x = 0.75f;
+            y = 0.75f;
+        }
+        Vector2 move = new Vector2(x, y);
+        bool jump = input[4];
+        bool rightClick = input[5];
+        bool leftClick = input[6];
+        if (m_InGamePlayerList.TryGetValue(id, out InGamePlayer p))
+        {
+            IDLogger.Log("Receiving Movement data");
+            p.ReceiveMovement(pos, input);
+        }
+    }
+
+    #endregion
+}

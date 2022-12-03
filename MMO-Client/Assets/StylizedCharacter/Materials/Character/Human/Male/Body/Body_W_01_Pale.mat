@@ -1,0 +1,272 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3433703803777584252
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Body_W_01_Pale
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_ShaderKeywords: _ENVIRONMENTREFLECTIONS_OFF _NORMALMAP _SPECULARHIGHLIGHTS_OFF
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _ArcherMask:
+        m_Texture: {fileID: 2800000, guid: 36610a2f23ec6864d8098fad87c1f7c6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseColor:
+        m_Texture: {fileID: 2800000, guid: f30da1ab1a06fe84b929b3f393b5b930, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: d8c00a91415e42e8885e17e54646fd4d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Body_Add:
+        m_Texture: {fileID: 2800000, guid: e7dc77def268496cacafa50179554515, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Body_Add1:
+        m_Texture: {fileID: 2800000, guid: fcfc48b0465f43a383e8e72da1a41c07, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Body_D:
+        m_Texture: {fileID: 2800000, guid: d8c00a91415e42e8885e17e54646fd4d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Body_N:
+        m_Texture: {fileID: 2800000, guid: f06cf51da8174e12866c13946fa20a94, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: f06cf51da8174e12866c13946fa20a94, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Chest_D:
+        m_Texture: {fileID: 2800000, guid: e7dc77def268496cacafa50179554515, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Chest_N:
+        m_Texture: {fileID: 2800000, guid: fcfc48b0465f43a383e8e72da1a41c07, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DK_MaskLower:
+        m_Texture: {fileID: 2800000, guid: 6c8c126ed726b884fb155c9f88533368, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DK_MaskUpper:
+        m_Texture: {fileID: 2800000, guid: 07a920472e98d8b4e94db58cf1174ee6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Glove_D:
+        m_Texture: {fileID: 2800000, guid: e7dc77def268496cacafa50179554515, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Glove_N:
+        m_Texture: {fileID: 2800000, guid: fcfc48b0465f43a383e8e72da1a41c07, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Mage_LowerMask:
+        m_Texture: {fileID: 2800000, guid: 523f31f85ccc56144ae2fa243521de91, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Mage_UpperMask:
+        m_Texture: {fileID: 2800000, guid: 0bb0d3c8bc40b274fb1c3b04add50b9b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: d8c00a91415e42e8885e17e54646fd4d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NR_LowerMask:
+        m_Texture: {fileID: 2800000, guid: d7e8e7dcc8b380846a2f443d152cafdf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NR_UpperMask:
+        m_Texture: {fileID: 2800000, guid: 66893b81d5a2ade4f91ecce6804598c6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NW_LowerMask:
+        m_Texture: {fileID: 2800000, guid: 3e20319eea42dfa4a865931c8aa8d70f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NW_UpperMask:
+        m_Texture: {fileID: 2800000, guid: 42ef7f8fd771ca741a5dca0ebc44053a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NewbieMage_Mask:
+        m_Texture: {fileID: 2800000, guid: f9d375215ba9a0e4380dc2cf47b16f74, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: 57a36b5dc08bb494d8ce72577fbe8bc2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Pants_D:
+        m_Texture: {fileID: 2800000, guid: e7dc77def268496cacafa50179554515, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Pants_N:
+        m_Texture: {fileID: 2800000, guid: fcfc48b0465f43a383e8e72da1a41c07, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _PeasantMask:
+        m_Texture: {fileID: 2800000, guid: ff80a1f91b05ee14ebd3e3e4aeb431e3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Underhair:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Underwear_D:
+        m_Texture: {fileID: 2800000, guid: e7dc77def268496cacafa50179554515, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Underwear_N:
+        m_Texture: {fileID: 2800000, guid: fcfc48b0465f43a383e8e72da1a41c07, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaClip: 0
+    - _ArmorArcherBoots: 1
+    - _ArmorArcherChest: 1
+    - _ArmorArcherGloves: 1
+    - _ArmorArcherPants: 1
+    - _ArmorDeathknightArmbandages: 1
+    - _ArmorDeathknightBoots: 1
+    - _ArmorDeathknightChest: 1
+    - _ArmorDeathknightGloves: 1
+    - _ArmorDeathknightPants: 1
+    - _ArmorMageArmbandages: 1
+    - _ArmorMageBoots: 1
+    - _ArmorMageChest: 1
+    - _ArmorMageGloves: 1
+    - _ArmorMagePants: 1
+    - _ArmorMageRobe: 1
+    - _ArmorNewbieMageBelt: 1
+    - _ArmorNewbieMageBoots: 1
+    - _ArmorNewbieMageChest: 1
+    - _ArmorNewbieMageRobe: 1
+    - _ArmorNewbieRangerBelt: 1
+    - _ArmorNewbieRangerBoots: 1
+    - _ArmorNewbieRangerChest: 1
+    - _ArmorNewbieRangerGloves: 1
+    - _ArmorNewbieRangerPants: 1
+    - _ArmorNewbieWarriorBelt: 1
+    - _ArmorNewbieWarriorBoots: 1
+    - _ArmorNewbieWarriorChest: 1
+    - _ArmorNewbieWarriorGloves: 1
+    - _ArmorNewbieWarriorPants: 1
+    - _ArmorPeasantBoots: 1
+    - _ArmorPeasantPants: 1
+    - _ArmorPeasantShirt: 1
+    - _Blend: 0
+    - _BumpScale: 1
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DetailAlbedoMapScale: 1
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _EnvironmentReflections: 0
+    - _Gloss: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0
+    - _GlossyReflections: 0
+    - _HasUnderhair: 0
+    - _HueShift: 0
+    - _HueShiftEnabled: 0
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
+    - _Smoothness: 0
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 0
+    - _SrcBlend: 1
+    - _Surface: 0
+    - _UVSec: 0
+    - _WorkflowMode: 1
+    - _ZWrite: 1
+    - __dirty: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+  m_BuildTextureStacks: []
