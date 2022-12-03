@@ -23,6 +23,13 @@ public class PlayerAnimation : CharacterAnimation
         throw new System.NotImplementedException();
     }
 
+    public override void SetMove(Vector3 move)
+    {
+        IDLogger.Log($"Right: {move.x} Forward: {move.z}");
+        m_Anim.SetFloat("right", move.x);
+        m_Anim.SetFloat("forward", move.z);
+    }
+
     public override void SetMove(Vector2 move)
     {
         IDLogger.Log($"Right: {move.x} Forward: {move.y}");

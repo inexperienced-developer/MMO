@@ -11,6 +11,7 @@ public abstract class CharacterAnimation : MonoBehaviour
         m_Anim = GetComponent<Animator>();
     }
 
+    public abstract void SetMove(Vector3 move);
     public abstract void SetMove(Vector2 move);
     public abstract void SetJump(bool jump);
     public abstract void SetAttack(int attack);

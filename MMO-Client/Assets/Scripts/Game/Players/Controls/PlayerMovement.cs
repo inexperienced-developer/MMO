@@ -59,7 +59,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (m_Player == null || m_Player.Controls == null) Init();
         Vector3 dir = m_Player.Controls.Movement.normalized;
-        IDLogger.Log($"Dir: {dir}");
         if (m_Player.Controls.RightClick)
         {
             float faceCamera = Mathf.SmoothDampAngle(transform.eulerAngles.y, m_CameraController.Camera.transform.eulerAngles.y, ref m_TurnSmoothVel, Constants.PLAYER_TURN_SPEED);
@@ -88,7 +87,8 @@ public class PlayerMovement : MonoBehaviour
             dir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
             m_Controller.Move(dir.normalized * m_Speed);
         }
-        m_Player.Anim.SetMove(new Vector2(m_Player.Controls.Movement.x, m_Player.Controls.Movement.z));
+        Vector3 animDir = transform.InverseTransformDirection(dir.normalized);
+        m_Player.Anim.SetMove(animDir);
     }
 
     private void NotLocalMove()
