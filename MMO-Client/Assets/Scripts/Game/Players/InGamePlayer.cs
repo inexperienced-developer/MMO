@@ -1,5 +1,7 @@
 using InexperiencedDeveloper.Core.Controls;
+using InexperiencedDeveloper.Utils;
 using InexperiencedDeveloper.Utils.Log;
+using Riptide;
 using UnityEngine;
 
 public class InGamePlayer : Player
@@ -38,11 +40,16 @@ public class InGamePlayer : Player
         }
     }
 
-    public void ReceiveMovement(Vector3 pos, bool[] inputs)
+    private void FixedUpdate()
     {
-        if(!(Id == NetworkManager.Instance.Client.Id))
+        if (IsLocal) SendInputs();
+    }
+
+    public void ReceiveMovement(Vector3 pos, float yRot, bool[] inputs)
+    {
+        if(Id != NetworkManager.Instance.Client.Id)
         {
-            PlayerMovement.SetInputs(inputs);
+            PlayerMovement.SetInputs(yRot, inputs);
         }
         if (Vector3.Distance(pos, transform.position) > 1)
         {
@@ -50,22 +57,24 @@ public class InGamePlayer : Player
         }
     }
 
-    //protected void OnEnable()
-    //{
-    //    SceneManager.sceneLoaded += OnSceneLoaded;
-    //}
+    #region Messages
+    //-------------------------------------------------------------------------------------//
+    //---------------------------- Message Sending ----------------------------------------//
+    //-------------------------------------------------------------------------------------//
 
-    //protected void OnDisable()
-    //{
-    //    SceneManager.sceneLoaded -= OnSceneLoaded;
-    //}
+    protected void SendInputs()
+    {
+        Message msg = Message.Create(MessageSendMode.Unreliable, (ushort)ClientToServerId.MoveRequest);
+        Vector2 movement = PlayerMovement.MoveDir;
+        bool jump = Controls.Jump;
 
-    //private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    //{
-    //    if(scene.buildIndex == GeoArea)
-    //    {
-    //        LevelManager.Instance.MoveGameObjectToScene
-    //    }
-    //}
+        byte input = Utilities.BoolsToByte(new bool[7] { movement.x > 0, movement.x < 0, movement.y > 0, movement.y < 0, jump, Controls.RightClick, Controls.LeftClick });
+        msg.AddByte(input);
+        msg.AddFloatInt(Controls.PlayerMovement.LookDir);
+
+        NetworkManager.Instance.Client.Send(msg);
+    }
+
+    #endregion
 
 }

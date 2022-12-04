@@ -211,12 +211,12 @@ public class PlayerManager : Singleton<PlayerManager>
     }
 
     [MessageHandler((ushort)ServerToClientId.UpdatePosition)]
+    //Receives 12 Bytes per call per player
     private static void ReceiveMovement(Message msg)
     {
-        ushort id = msg.GetUShort();
-        IDLogger.Log($" Received movement {id}");
-        Vector3 pos = msg.GetVector3Int();
-        byte inputByte = msg.GetByte();
+        ushort id = msg.GetUShort(); // 1Byte
+        Vector3 pos = msg.GetVector3Int(); // 8 Bytes
+        byte inputByte = msg.GetByte(); // 1 Byte
         bool[] input = Utilities.ByteToBools(inputByte, 7);
         float x = input[0] ? 1 : 0;
         x = input[1] ? -1 : x;
@@ -224,17 +224,18 @@ public class PlayerManager : Singleton<PlayerManager>
         y = input[3] ? -1 : y;
         if (x > 0 && y > 0)
         {
-            x = 0.75f;
-            y = 0.75f;
+            x = 0.5f;
+            y = 0.5f;
         }
         Vector2 move = new Vector2(x, y);
         bool jump = input[4];
         bool rightClick = input[5];
         bool leftClick = input[6];
+        float yRot = msg.GetFloatInt(); // 2 Bytes
         if (m_InGamePlayerList.TryGetValue(id, out InGamePlayer p))
         {
             IDLogger.Log("Receiving Movement data");
-            p.ReceiveMovement(pos, input);
+            p.ReceiveMovement(pos, yRot, input);
         }
     }
 

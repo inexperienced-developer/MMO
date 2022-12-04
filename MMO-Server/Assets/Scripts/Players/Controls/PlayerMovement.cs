@@ -52,14 +52,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
+        Quaternion rot = Quaternion.Euler(transform.rotation.x, m_YRot, transform.rotation.z);
         if (m_RightClick)
         {
-            float faceCamera = Mathf.SmoothDampAngle(transform.eulerAngles.y, m_YRot, ref m_TurnSmoothVel, Constants.PLAYER_TURN_SPEED);
-            transform.rotation = Quaternion.Euler(0, faceCamera, 0);
+            transform.rotation = rot;
         }
-        Vector3 dir = new Vector3(m_MovementInput.x, 0, m_MovementInput.y).normalized;
-        Quaternion rot = Quaternion.Euler(transform.rotation.x, m_YRot, transform.rotation.z);
-        dir *= m_Speed;
+        Vector3 dir = new Vector3(m_MovementInput.x, 0, m_MovementInput.y);
         if (dir.magnitude >= 0.01f)
         {
             float targetAngle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + m_YRot; // IF RIGHT CLICK DONT ROTATE
@@ -103,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
         msg.AddUShort(m_Player.Id);
         msg.AddVector3Int(transform.position);
         msg.AddByte(input);
+        msg.AddFloatInt(m_YRot);
         NetworkManager.Instance.Server.Send(msg, toId);
     }
     #endregion

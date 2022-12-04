@@ -266,8 +266,8 @@ public class PlayerManager : Singleton<PlayerManager>
         y = input[3] ? -1 : y;
         if (x > 0 && y > 0)
         {
-            x = 0.75f;
-            y = 0.75f;
+            x = 0.5f;
+            y = 0.5f;
         }
         Vector2 move = new Vector2(x, y);
         bool jump = input[4];

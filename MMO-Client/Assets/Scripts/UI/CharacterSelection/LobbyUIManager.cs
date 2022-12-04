@@ -352,7 +352,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         newHairStyle += add;
         //Adding an extra for None
         if (newHairStyle < 0) newHairStyle = CreateCharacter.AppearanceSettings.BeardStyles.Length;
-        else newHairStyle %= CreateCharacter.AppearanceSettings.BeardStyles.Length + 1;
+        else newHairStyle %= CreateCharacter.AppearanceSettings.BeardStyles.Length;
         CreateCharacter.CurrentFacialHairStyle = (FacialHairStyle)newHairStyle;
         m_SelectFacialHairStyleTxt.text = $"{(int)CreateCharacter.CurrentFacialHairStyle + 1}";
     }
