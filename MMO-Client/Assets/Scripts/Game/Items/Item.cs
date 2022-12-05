@@ -16,6 +16,7 @@ public enum Slot : byte
     Pants = 9,
     Boots = 10,
     Ring = 11,
+    Bag = 12,
 }
 
 [CreateAssetMenu(menuName = "Items/Item")]
@@ -24,5 +25,6 @@ public class Item : ScriptableObject
     public ushort Id;
     public string ItemName;
     public Slot Slot;
-    public GameObject model;
+    public GameObject Model;
+    public Sprite Icon;
 }

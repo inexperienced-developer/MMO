@@ -58,6 +58,7 @@ public class PlayerManager : Singleton<PlayerManager>
                 (FacialHairStyle)data.FacialHairStyle, (EyebrowStyle)data.EyebrowStyle, (EyeColor)data.EyeColor, data.BootsOn,
                 data.ShirtOn, data.PantsOn);
             player = go.AddComponent<InGamePlayer>();
+            m_LocalPlayer = player;
             player.Init(id, GameManager.Email);
             player.name = $"Player {id} ({data.Name}) -- LOCAL PLAYER";
             if (m_InGamePlayerList.ContainsKey(id))
@@ -90,6 +91,11 @@ public class PlayerManager : Singleton<PlayerManager>
         {
             LevelManager.Instance.MoveGameObjectToScene(level, p);
         }
+    }
+
+    private static void SetInventory(List<ushort> bagIDs, List<ushort> itemIDs)
+    {
+        GetLocalPlayer().SetInventory(bagIDs, itemIDs);
     }
 
     #region Messages
@@ -200,14 +206,19 @@ public class PlayerManager : Singleton<PlayerManager>
     [MessageHandler((ushort)ServerToClientId.SendInventory)]
     private static void ReceiveInventory(Message msg)
     {
-        byte inventoryLength = msg.GetByte();
-        byte inventorySize = msg.GetByte();
-        List<ushort> inventory = new();
-        for(int i = 0; i < inventoryLength - 1; i++)
+        byte bagLength = msg.GetByte();
+        List<ushort> bagIDs = new();
+        for (int i = 0; i < bagLength; i++)
         {
-            inventory.Add(msg.GetUShort());
+            bagIDs.Add(msg.GetUShort());
         }
-        //NEED TO DO SOMETHING WITH THIS
+        byte inventoryLength = msg.GetByte();
+        List<ushort> inventoryIDs = new();
+        for(int i = 0; i < inventoryLength; i++)
+        {
+            inventoryIDs.Add(msg.GetUShort());
+        }
+        SetInventory(bagIDs, inventoryIDs);
     }
 
     [MessageHandler((ushort)ServerToClientId.UpdatePosition)]

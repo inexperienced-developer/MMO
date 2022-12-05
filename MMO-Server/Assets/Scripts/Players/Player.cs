@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     public string Email { get; private set; }
     public List<CharacterAppearanceData> Characters { get; private set; }
     public CharacterAppearanceData SpawnedCharacter { get; private set; }
-    public InventoryData CurrentInventory { get; private set; }
+    public InventoryData CurrentInventoryData { get; private set; }
     public GearData CurrentGear { get; private set; }
     public PlayerMovement PlayerMovement { get; private set; }
     public CharacterController Controller { get; private set; }
@@ -53,52 +53,33 @@ public class Player : MonoBehaviour
         }
     }
 
-    public async Task SetInventory(List<float> inventoryData)
+    public void SetInventoryData(InventoryData inventory)
     {
-        byte size = (byte)inventoryData[0];
-        List<Item> items = new List<Item>();
-        try
-        {
-            for(int i = 1; i < inventoryData.Count; i++)
-            {
-                float item = inventoryData[i];
-                ushort id = (ushort)item;
-                string itemStr = await ItemManager.GetItemString(id);
-                string[] itemDetails = itemStr.Split("`");
-                byte slot = byte.Parse(itemDetails[1]);
-                Item newItem = new Item(id, itemDetails[0], (Slot)slot);
-                items.Add(newItem);
-            }
-            CurrentInventory = new InventoryData(items, size);
-        }
-        catch (System.Exception e)
-        {
-            IDLogger.LogError($"Failed building inventory with Exception: {e}");
-        }
+        CurrentInventoryData = inventory;
     }
 
-    public async Task SetGear(List<float> gearData)
-    {
-        List<EquippableItem> items = new List<EquippableItem>();
-        try
-        {
-            foreach (var item in gearData)
-            {
-                ushort id = (ushort)item;
-                string itemStr = await ItemManager.GetItemString(id);
-                string[] itemDetails = itemStr.Split("`");
-                byte slot = byte.Parse(itemDetails[1]);
-                bool hasAbility = bool.Parse(itemDetails[2]);
-                EquippableItem newItem = new EquippableItem(id, itemDetails[0], (Slot)slot, true, hasAbility);
-                items.Add(newItem);
-            }
-            CurrentGear = new GearData(items);
-        }
-        catch (System.Exception e)
-        {
-            IDLogger.LogError($"Failed building gear with Exception: {e}");
-        }
-    }
+    //public async Task SetGear(List<float> gearData)
+    //{
+    //    List<EquippableItem> items = new List<EquippableItem>();
+    //    try
+    //    {
+    //        foreach (var item in gearData)
+    //        {
+    //            ushort id = (ushort)item;
+    //            string itemStr = await ItemManager.GetItemString(id);
+    //            string[] itemDetails = itemStr.Split("`");
+    //            byte slot = byte.Parse(itemDetails[1]);
+    //            bool hasAbility = bool.Parse(itemDetails[2]);
+    //            EquippableItem newItem = new EquippableItem(id, itemDetails[0], (Slot)slot, true, hasAbility);
+    //            items.Add(newItem);
+    //        }
+    //        CurrentGear = new GearData(items);
+    //    }
+    //    catch (System.Exception e)
+    //    {
+    //        IDLogger.LogError($"Failed building gear with Exception: {e}");
+    //    }
+    //}
 
     //-------------------------------------------------------------------------------------//
     //---------------------------- Message Sending ----------------------------------------//
@@ -150,16 +131,20 @@ public class Player : MonoBehaviour
         return msg;
     }
 
-    public void SendInventory(ushort toId, List<float> inventory)
+    public void SendInventory(ushort toId, InventoryData inventory)
     {
         Message msg = Message.Create(MessageSendMode.Reliable, (ushort)ServerToClientId.SendInventory);
-        msg.AddByte((byte)inventory.Count); //Length of inventory
-        msg.AddByte((byte)inventory[0]); //Size of inventory
-
-        //Add each inventory item
-        for (int i = 1; i < inventory.Count; i++)
+        msg.AddByte((byte)inventory.BagIDs.Count); //Length of Bags
+        //Send bags
+        for (int i = 0; i < inventory.BagIDs.Count; i++)
         {
-            msg.AddUShort((ushort)inventory[i]);
+            msg.AddUShort(inventory.BagIDs[i]);
+        }
+        msg.AddByte((byte)inventory.ItemIDs.Count); //Size of inventory
+        //Add each inventory item
+        for (int i = 0; i < inventory.ItemIDs.Count; i++)
+        {
+            msg.AddUShort(inventory.ItemIDs[i]);
         }
         NetworkManager.Instance.Server.Send(msg, toId);
     }

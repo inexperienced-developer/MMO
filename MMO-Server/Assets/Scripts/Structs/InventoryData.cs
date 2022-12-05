@@ -2,14 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct InventoryData
+public class InventoryData
 {
-    public List<Item> Items;
-    public byte Size;
+    public List<ushort> BagIDs;
+    public List<ushort> ItemIDs;
 
-    public InventoryData(List<Item> items, byte size)
+    public InventoryData()
     {
-        Items = items;
-        Size = size;
+        ItemIDs = new List<ushort>();
+        BagIDs = new List<ushort>();
+    }
+
+    public InventoryData(List<ushort> bagIDs, List<ushort> itemIDs)
+    {
+        BagIDs = bagIDs;
+        ItemIDs = itemIDs;
     }
 }

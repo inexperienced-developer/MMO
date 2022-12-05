@@ -2,11 +2,11 @@ using InexperiencedDeveloper.Core.Controls;
 using InexperiencedDeveloper.Utils;
 using InexperiencedDeveloper.Utils.Log;
 using Riptide;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InGamePlayer : Player
 {
-    public Inventory Inventory { get; private set; }
     public Gear Gear { get; private set; }
     public int GeoArea = -1;
 
@@ -23,10 +23,14 @@ public class InGamePlayer : Player
             if(Controls == null)
             {
                 Controls = GetComponent<PlayerControls>() == null ? gameObject.AddComponent<PlayerControls>() : GetComponent<PlayerControls>();
-
             }
 
             Controls.Init();
+            if (Inventory == null)
+            {
+                Inventory = GetComponent<Inventory>() == null ? gameObject.AddComponent<Inventory>() : GetComponent<Inventory>();
+            }
+            Inventory.Init();
         }
         if (PlayerMovement == null)
         {
@@ -38,6 +42,7 @@ public class InGamePlayer : Player
             Anim = GetComponent<PlayerAnimation>() == null ? gameObject.AddComponent<PlayerAnimation>() : GetComponent<PlayerAnimation>();
             Anim.Init();
         }
+
     }
 
     private void FixedUpdate()

@@ -14,6 +14,7 @@ public enum Slot : byte
     Pants = 9,
     Boots = 10,
     Ring = 11,
+    Bag = 12,
 }
 
 [Serializable]

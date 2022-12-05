@@ -19,7 +19,7 @@ namespace InexperiencedDeveloper.Firebase
     {
         private FirebaseFirestore m_DB;
 
-        private List<string> m_SubCollections = new List<string>() { "Appearance", };
+        private List<string> m_SubCollections = new List<string>() { "Appearance", "Inventory", };
 
         protected override void Awake()
         {
@@ -81,11 +81,15 @@ namespace InexperiencedDeveloper.Firebase
 
         public async Task<List<CharacterAppearanceData>> AddNewCharToDB(string email, CharacterAppearanceData data)
         {
-            Dictionary<string, object> dict1 = new();
-            Dictionary<string, object> dict2 = new();
-            CreateDataDict(data, ref dict1, ref dict2);
-            await m_DB.Collection("users").Document(email).Collection("Characters").Document(data.Name).SetAsync(dict1);
-            await m_DB.Collection("users").Document(email).Collection("Characters").Document(data.Name).Collection("Appearance").Document("Physical").SetAsync(dict2);
+            Dictionary<string, object> generalDict = new();
+            Dictionary<string, object> appearanceDict = new();
+            Dictionary<string, object> bagDict = new();
+            Dictionary<string, object> inventoryDict = new();
+            CreateDataDict(data, ref generalDict, ref appearanceDict, ref bagDict, ref inventoryDict);
+            await m_DB.Collection("users").Document(email).Collection("Characters").Document(data.Name).SetAsync(generalDict);
+            await m_DB.Collection("users").Document(email).Collection("Characters").Document(data.Name).Collection("Appearance").Document("Physical").SetAsync(appearanceDict);
+            await m_DB.Collection("users").Document(email).Collection("Characters").Document(data.Name).Collection("Inventory").Document("Bags").SetAsync(bagDict);
+            await m_DB.Collection("users").Document(email).Collection("Characters").Document(data.Name).Collection("Inventory").Document("Items").SetAsync(inventoryDict);
             Dictionary<string, object> globalChar = new Dictionary<string, object>
             {
                     { data.Name, 0 }
@@ -94,20 +98,27 @@ namespace InexperiencedDeveloper.Firebase
             return await GetCharacters(email);
         }
 
-        private void CreateDataDict(CharacterAppearanceData data, ref Dictionary<string, object> dict1, ref Dictionary<string, object> dict2)
+        private void CreateDataDict(CharacterAppearanceData data, ref Dictionary<string, object> generalDict, ref Dictionary<string, object> appearanceDict,
+            ref Dictionary<string, object> bagDict, ref Dictionary<string, object> inventoryDict)
         {
-            dict1 = new();
-            dict1.Add("level", data.Level);
-            dict1.Add("totalLevel", data.TotalLevel);
-            dict2 = new();
+            generalDict = new();
+            generalDict.Add("level", data.Level);
+            generalDict.Add("totalLevel", data.TotalLevel);
+            appearanceDict = new();
             byte appearanceByte = Utilities.BoolsToByte(new bool[3] { data.PantsOn, data.ShirtOn, data.BootsOn });
-            dict2.Add("appearanceByte", appearanceByte);
-            dict2.Add("eyeColor", data.EyeColor);
-            dict2.Add("eyebrowStyle", data.EyebrowStyle);
-            dict2.Add("facialHairStyle", data.FacialHairStyle);
-            dict2.Add("hairColor", data.HairColor);
-            dict2.Add("hairStyle", data.HairStyle);
-            dict2.Add("skinColor", data.SkinColor);
+            appearanceDict.Add("appearanceByte", appearanceByte);
+            appearanceDict.Add("eyeColor", data.EyeColor);
+            appearanceDict.Add("eyebrowStyle", data.EyebrowStyle);
+            appearanceDict.Add("facialHairStyle", data.FacialHairStyle);
+            appearanceDict.Add("hairColor", data.HairColor);
+            appearanceDict.Add("hairStyle", data.HairStyle);
+            appearanceDict.Add("skinColor", data.SkinColor);
+            bagDict = new();
+            //First bags
+            bagDict.Add("Bag1", "000003"); // Item # 000003: Weathered Bag
+            //Then fill
+            inventoryDict = new();
+            inventoryDict.Add("0", "000000"); // Item # 000000: Home Stone (Hearthstone)
         }
 
         public async Task<List<CharacterAppearanceData>> DeleteCharFromDB(string email, string n)
@@ -164,7 +175,6 @@ namespace InexperiencedDeveloper.Firebase
                     List<float> lastPos = new();
                     List<float> lastRot = new();
                     List<float> gearList = new();
-                    List<float> inventoryList = new();
                     Dictionary<string, object> set = new Dictionary<string, object>();
                     Dictionary<string, object> charDict = charSnap.ToDictionary();
                     if (charDict == null || charDict.Count <= 0) return null;
@@ -179,8 +189,6 @@ namespace InexperiencedDeveloper.Firebase
                             lastPos.Add(i);
                             IDLogger.LogWarning($"Added {i} to lastPos: {lastPos.Count}");
                         }
-                        //float[] pos = (float[])charDict["lastPos"];
-                        //lastPos = new(pos);
                     }
                     else
                     {
@@ -230,28 +238,36 @@ namespace InexperiencedDeveloper.Firebase
                         set.Add("gearList", gearList);
                         await charRef.SetAsync(set, SetOptions.MergeAll);
                     }
-                    //Get Inventory Data
-                    if (charDict.ContainsKey("inventoryList"))
-                    {
-                        List<object> c = (List<object>)charDict["inventoryList"];
-                        foreach (var item in c)
-                        {
-                            float i = float.Parse(item.ToString());
-                            inventoryList.Add(i);
-                        }
-                    }
-                    else
-                    {
-                        inventoryList = new List<float>();
-                        inventoryList.Add(GameManager.DEFAULT_INVENTORY_SIZE);
-                        set = new();
-                        set.Add("inventoryList", inventoryList);
-                        await charRef.SetAsync(set, SetOptions.MergeAll);
-                    }
+
                     data = new List<List<float>>();
                     data.Add(lastPos);
                     data.Add(lastRot);
                     data.Add(gearList);
+                }
+                DocumentReference bagRef = m_DB.Collection("users").Document(email).Collection("Characters").Document(n).Collection("Inventory").Document("Bags");
+                DocumentReference inventoryRef = m_DB.Collection("users").Document(email).Collection("Characters").Document(n).Collection("Inventory").Document("Items");
+                DocumentSnapshot bagSnap = await bagRef.GetSnapshotAsync();
+                DocumentSnapshot inventorySnap = await inventoryRef.GetSnapshotAsync();
+                if(bagSnap != null)
+                {
+                    Dictionary<string, object> bagDict = bagSnap.ToDictionary();
+                    List<float> bagList = new();
+                    foreach (var key in bagDict.Keys)
+                    {
+                        float i = float.Parse(bagDict[key].ToString());
+                        bagList.Add(i);
+                    }
+                    data.Add(bagList);
+                }
+                if (inventorySnap != null)
+                {
+                    Dictionary<string, object> inventoryDict = inventorySnap.ToDictionary();
+                    List<float> inventoryList = new();
+                    foreach (var key in inventoryDict.Keys)
+                    {
+                        float i = float.Parse(inventoryDict[key].ToString());
+                        inventoryList.Add(i);
+                    }
                     data.Add(inventoryList);
                 }
                 return data;

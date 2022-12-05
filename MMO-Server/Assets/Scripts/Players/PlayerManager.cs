@@ -141,7 +141,8 @@ public class PlayerManager : Singleton<PlayerManager>
             byte geoArea = (byte)res[0][3];
             Quaternion rot = new Quaternion(res[1][0], res[1][1], res[1][2], res[1][3]);
             List<float> gear = res[2];
-            List<float> inventory = res[3];
+            List<ushort> bagIDs = res[3].Select(x => (ushort)x).ToList();
+            List<ushort> inventoryIDs = res[4].Select(x => (ushort)x).ToList();
 
             foreach (var p in m_PlayerList.Values)
             {
@@ -169,6 +170,8 @@ public class PlayerManager : Singleton<PlayerManager>
                 }
             }
 
+            InventoryData inventory = new InventoryData(bagIDs, inventoryIDs);
+
             //Send spawn data to everyone
             player.SendSpawned(pos, rot, gear, geoArea, id);
 
@@ -177,8 +180,8 @@ public class PlayerManager : Singleton<PlayerManager>
 
             //Set player data on Server
             player.InitSpawn(pos, rot);
-            await player.SetInventory(inventory);
-            await player.SetGear(gear);
+            player.SetInventoryData(inventory);
+            //await player.SetGear(gear);
         }
         catch (System.Exception e)
         {

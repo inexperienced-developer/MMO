@@ -381,11 +381,6 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         m_SelectEyeColorTxt.text = $"{CreateCharacter.CurrentEyeColor}";
     }
 
-    public void SetCharacterName()
-    {
-        CreateCharacter.Name = m_NameInput.text;
-    }
-
     public async Task SubmitCharacter()
     {
         LobbyPlayer player = (LobbyPlayer)PlayerManager.GetLocalPlayer();
@@ -400,7 +395,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
             IDLogger.LogError($"Tried to check but no server response with Exception {e}");
         }
         if (m_CharacterExists) { IDLogger.LogError("A character with this name already exists."); return; }
-        SetCharacterName();
+        CreateCharacter.Name = m_NameInput.text;
         CharacterAppearanceData data = new CharacterAppearanceData(CreateCharacter.Name, (byte)1, (ushort)GameManager.NUM_OF_SKILLS,
             (byte)CreateCharacter.CurrentSkinColor, (byte)CreateCharacter.CurrentHairColor, (byte)CreateCharacter.CurrentHairStyle, (byte)CreateCharacter.CurrentFacialHairStyle, (byte)CreateCharacter.CurrentEyebrowStyle,
             (byte)CreateCharacter.CurrentEyeColor, CreateCharacter.AppearanceBools[2], CreateCharacter.AppearanceBools[1], CreateCharacter.AppearanceBools[0]);
