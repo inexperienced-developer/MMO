@@ -9,6 +9,13 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
+
+public enum InteractType : byte
+{
+    None = 0,
+    Harvest,
+}
+
 public class Player : MonoBehaviour
 {
     public ushort Id { get; private set; }
@@ -19,6 +26,9 @@ public class Player : MonoBehaviour
     public GearData CurrentGear { get; private set; }
     public PlayerMovement PlayerMovement { get; private set; }
     public CharacterController Controller { get; private set; }
+    public PlayerStateMachine StateMachine { get; private set; }
+
+    [SerializeField] protected LayerMask m_NonPlayerLayer;
 
     private void OnDestroy()
     {
@@ -39,7 +49,9 @@ public class Player : MonoBehaviour
         Controller.center = Constants.CHARACTER_CONTROLLER_CAPSULE_CENTER;
         transform.position = pos;
         transform.rotation = rot;
+        StateMachine = StateMachine == null ? gameObject.AddComponent<PlayerStateMachine>() : StateMachine;
     }
+
 
     public void SetSpawnedCharacter(string n)
     {
@@ -56,6 +68,21 @@ public class Player : MonoBehaviour
     public void SetInventoryData(InventoryData inventory)
     {
         CurrentInventoryData = inventory;
+    }
+
+    public void Interact()
+    {
+        RaycastHit[] hits = Physics.RaycastAll(transform.position, transform.forward, 5, m_NonPlayerLayer);
+        if (hits.Length > 0)
+        {
+            IInteractable obj = hits[0].collider.GetComponent<IInteractable>();
+            obj.Interact(this);
+        }
+    }
+
+    public void StopInteract()
+    {
+
     }
 
     //public async Task SetGear(List<float> gearData)
@@ -180,6 +207,20 @@ public class Player : MonoBehaviour
         msg.AddVector3Int(transform.position);
 
         return msg;
+    }
+
+    public void ValidInteraction(ushort toId, bool valid)
+    {
+        Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.Interact);
+        msg.AddBool(valid);
+        NetworkManager.Instance.Server.Send(msg, toId);
+    }
+
+    public void SendReward(ushort toId, ushort[] reward)
+    {
+        Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.HarvestMsg);
+        msg.AddUShorts(reward, false);
+        NetworkManager.Instance.Server.Send(msg, toId);
     }
 
 

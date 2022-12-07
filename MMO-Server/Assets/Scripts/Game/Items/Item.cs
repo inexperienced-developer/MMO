@@ -1,4 +1,6 @@
+using InexperiencedDeveloper.Utils.Log;
 using System;
+using UnityEngine;
 
 public enum Slot : byte
 {
@@ -17,22 +19,10 @@ public enum Slot : byte
     Bag = 12,
 }
 
-[Serializable]
-public class Item
+[CreateAssetMenu(menuName = "Items/Item")]
+public class Item : ScriptableObject
 {
     public ushort Id;
     public string ItemName;
     public Slot Slot;
-
-    public virtual void Use()
-    {
-        return;
-    }
-
-    public Item(ushort id, string itemName, Slot slot)
-    {
-        Id = id;
-        ItemName = itemName;
-        Slot = slot;
-    }
 }

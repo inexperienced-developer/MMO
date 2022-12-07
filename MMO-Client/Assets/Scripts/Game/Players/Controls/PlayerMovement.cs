@@ -4,10 +4,7 @@ using InexperiencedDeveloper.Utils;
 using InexperiencedDeveloper.Utils.Log;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
@@ -61,7 +58,8 @@ public class PlayerMovement : MonoBehaviour
         m_MoveDir = Vector3.zero;
         if (m_Player == null || m_Player.Controls == null) Init();
         Vector3 dir = m_Player.Controls.Movement.normalized;
-        if (m_Player.Controls.RightClick)
+        Cursor.visible = !m_Player.Controls.RightClickHeld;
+        if (m_Player.Controls.RightClickHeld)
         {
             float faceCamera = Mathf.SmoothDampAngle(transform.eulerAngles.y, m_CameraController.Camera.transform.eulerAngles.y, ref m_TurnSmoothVel, Constants.PLAYER_TURN_SPEED);
             transform.rotation = Quaternion.Euler(0, faceCamera, 0);
@@ -85,11 +83,17 @@ public class PlayerMovement : MonoBehaviour
             m_MoveDir = dir;
             float targetAngle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + m_CameraAdder;
             float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref m_TurnSmoothVel, Constants.PLAYER_TURN_SPEED);
-            if (!m_Player.Controls.RightClick) transform.rotation = Quaternion.Euler(0, smoothAngle, 0);
+            if (!m_Player.Controls.RightClickHeld) transform.rotation = Quaternion.Euler(0, smoothAngle, 0);
 
             dir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
             m_Controller.Move(dir.normalized * m_Speed);
         }
+
+        //Change Player state
+        PlayerState state = dir.magnitude >= 0.01f ? PlayerState.Moving : m_Player.StateMachine.State;
+        if (state != m_Player.StateMachine.State) m_Player.StateMachine.ChangeState(state);
+
+        //Set Move Anim
         Vector3 animDir = transform.InverseTransformDirection(dir.normalized);
         m_Player.Anim.SetMove(animDir);
     }
@@ -112,6 +116,12 @@ public class PlayerMovement : MonoBehaviour
             dir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
             m_Controller.Move(dir.normalized * m_Speed);
         }
+
+        //Change Player state
+        PlayerState state = dir.magnitude >= 0.01f ? PlayerState.Moving : m_Player.StateMachine.State;
+        if (state != m_Player.StateMachine.State) m_Player.StateMachine.ChangeState(state);
+
+        //Set Move Anim
         Vector3 animDir = transform.InverseTransformDirection(dir.normalized);
         m_Player.Anim.SetMove(animDir);
     }

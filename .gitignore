@@ -62,3 +62,6 @@ crashlytics-build.properties
 */[Aa]ssets/Firebase*
 */[Aa]ssets/ExternalDependencyManager*
 */[Aa]ssets/google-services.json*
+
+#Extra Assets
+*/[Aa]ssets/Aquarius_Stylized_Trees*

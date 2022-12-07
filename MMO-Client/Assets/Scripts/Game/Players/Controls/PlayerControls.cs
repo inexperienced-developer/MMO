@@ -20,7 +20,9 @@ namespace InexperiencedDeveloper.Core.Controls
         public float TargetYawAngle { get; private set; }
         public bool Jump { get; private set; }
         public bool LeftClick { get; private set; }
-        public bool RightClick { get; private set; }
+        public bool RightClickHeld { get; private set; }
+        public bool RightClickPressed { get; private set; }
+        public Vector2 MousePos { get; private set; }
 
         public Vector3 WalkDir { get; private set; }
         public float WalkSpeed { get; private set; }
@@ -85,8 +87,10 @@ namespace InexperiencedDeveloper.Core.Controls
             CameraPitchAngle = Mathf.Clamp(CameraPitchAngle, -80f, 80f);
             Look = m_CalcKeyLook;
             Jump = m_GetJump;
-            RightClick = m_GetRightClick;
+            RightClickHeld = m_GetRightClick;
+            RightClickPressed = m_GetRightClickPressed;
             LeftClick = m_GetLeftClick;
+            MousePos = m_MousePos;
         }
 
         private void HandleInput()
@@ -131,8 +135,10 @@ namespace InexperiencedDeveloper.Core.Controls
         }
 
         private Vector2 m_CalcKeyLook => PlayerActions.Player.Look.ReadValue<Vector2>();
+        private Vector2 m_MousePos => PlayerActions.Player.MousePosition.ReadValue<Vector2>();
         private bool m_GetJump => PlayerActions.Player.Jump.IsPressed();
         private bool m_GetRightClick => PlayerActions.Player.RightClick.IsPressed();
+        private bool m_GetRightClickPressed => PlayerActions.Player.RightClick.WasPressedThisFrame();
         private bool m_GetLeftClick => PlayerActions.Player.LeftClick.IsPressed();
 
     }

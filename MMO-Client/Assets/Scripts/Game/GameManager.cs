@@ -21,6 +21,15 @@ public class GameManager : Singleton<GameManager>
     public static string CharacterName { get; private set; }
     public const byte NUM_OF_SKILLS = 9;
 
+
+    
+
+    protected override void Awake()
+    {
+        base.Awake();
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+
     public GameObject SpawnCharacter(string name, byte level, ushort totalLevel,
         byte skinColor, byte hairColor, byte hairStyle, byte facialHairStyle, byte eyebrowStyle,
         byte eyeColor, bool bootsOn, bool shirtOn, bool pantsOn)

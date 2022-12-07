@@ -3,32 +3,30 @@ using InexperiencedDeveloper.Utils.Log;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Linq;
 
 public class ItemManager : Singleton<ItemManager>
 {
-    public static Dictionary<string, Item> ItemDict { get; private set; }
-    [SerializeField] private List<Item> m_Items;
+    public static Dictionary<string, Item> ItemDict { get; private set; } = new Dictionary<string, Item>();
+
+    [SerializeField] private AssetLabelReference m_ItemLabelReference;
+
 
     protected override void Awake()
     {
         base.Awake();
-        Init();
+        Addressables.LoadAssetsAsync<Item>(m_ItemLabelReference, delegate { IDLogger.Log("Loaded Item Dict."); }).Completed += BuildDict;
     }
 
-    private void Init()
+    private void BuildDict(AsyncOperationHandle<IList<Item>> obj)
     {
-        BuildItemDict();
-    }
-
-    private void BuildItemDict()
-    {
-        ItemDict = new();
-        string idFmt = "000000";
-        //Get all items
-
-        foreach(var item in m_Items)
+        IDLogger.Log($"Building dict");
+        List<Item> items = obj.Result.ToList();
+        foreach (var item in items)
         {
-            ItemDict.Add(item.Id.ToString(idFmt), item);
+            ItemDict.Add(item.Id.ToString(Constants.ITEM_ID_FORMAT), item);
         }
     }
 }

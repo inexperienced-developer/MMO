@@ -14,6 +14,10 @@ public class PlayerManager : Singleton<PlayerManager>
     private static Dictionary<ushort, InGamePlayer> m_InGamePlayerList = new();
     private static Player m_LocalPlayer;
 
+    //Layer Options
+    [SerializeField] protected LayerMask m_NonPlayerLayer;
+    public LayerMask NonPlayerLayer => m_NonPlayerLayer;
+
     public static void RemovePlayerFromList(Player sender)
     {
         m_PlayerList.Remove(sender.Id);
@@ -96,6 +100,12 @@ public class PlayerManager : Singleton<PlayerManager>
     private static void SetInventory(List<ushort> bagIDs, List<ushort> itemIDs)
     {
         GetLocalPlayer().SetInventory(bagIDs, itemIDs);
+    }
+
+    private static void SendHarvestReward(ushort[] reward)
+    {
+        InGamePlayer p = (InGamePlayer)GetLocalPlayer();
+        p.ReceiveHarvestReward(reward);
     }
 
     #region Messages
@@ -245,9 +255,15 @@ public class PlayerManager : Singleton<PlayerManager>
         float yRot = msg.GetFloatInt(); // 2 Bytes
         if (m_InGamePlayerList.TryGetValue(id, out InGamePlayer p))
         {
-            IDLogger.Log("Receiving Movement data");
             p.ReceiveMovement(pos, yRot, input);
         }
+    }
+
+    [MessageHandler((ushort)ServerToClientId.HarvestMsg)]
+    private static void ReceiveHarvestMessage(Message msg)
+    {
+        ushort[] reward = msg.GetUShorts(2);
+        SendHarvestReward(reward);
     }
 
     #endregion

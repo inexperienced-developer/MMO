@@ -12,6 +12,8 @@ public enum ServerToClientId : ushort
     SpawnPlayer,
     SendInventory,
     UpdatePosition,
+    Interact,
+    HarvestMsg,
 }
 
 public enum ClientToServerId : ushort
@@ -22,6 +24,7 @@ public enum ClientToServerId : ushort
     DeleteCharacter,
     RequestSpawn,
     MoveRequest,
+    RequestInteract,
 }
 
 public class NetworkManager : Singleton<NetworkManager>

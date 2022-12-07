@@ -66,6 +66,11 @@ public class PlayerMovement : MonoBehaviour
 
             dir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
             m_Controller.Move(dir.normalized * m_Speed);
+            if(m_Player.StateMachine.State != PlayerState.Moving) m_Player.StateMachine.ChangeState(PlayerState.Moving);
+        }
+        else
+        {
+            if (m_Player.StateMachine.State == PlayerState.Moving) m_Player.StateMachine.ChangeState(PlayerState.Idle);
         }
         var nearbyPlayers = PlayerManager.Instance.GetNearbyPlayers(transform.position);
         foreach (var player in nearbyPlayers)

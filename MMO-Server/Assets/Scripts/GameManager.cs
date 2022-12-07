@@ -1,4 +1,5 @@
 using InexperiencedDeveloper.Core;
+using InexperiencedDeveloper.Utils.Log;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -11,5 +12,18 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private Transform m_SpawnPoint;
     public Transform SpawnPoint => m_SpawnPoint;
+
+    [ContextMenu("Check length Item Dict")]
+    public void CheckLen()
+    {
+        IDLogger.Log(ItemManager.Items.Keys.Count.ToString());
+    }
+
+    [ContextMenu("Test Dict")]
+    public void Test()
+    {
+        string val = ItemManager.Items["000000"].ItemName;
+        IDLogger.Log($"{val}");
+    }
 
 }

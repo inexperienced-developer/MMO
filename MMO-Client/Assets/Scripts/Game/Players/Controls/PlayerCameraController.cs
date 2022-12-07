@@ -30,7 +30,7 @@ public class PlayerCameraController : MonoBehaviour
     {
         if(m_FreeLook != null)
         {
-            if (m_Controls.LeftClick || m_Controls.RightClick)
+            if (m_Controls.LeftClick || m_Controls.RightClickHeld)
             {
                 m_FreeLook.m_XAxis.m_MaxSpeed = m_XAxisSpeed;
                 m_FreeLook.m_YAxis.m_MaxSpeed = m_YAxisSpeed;

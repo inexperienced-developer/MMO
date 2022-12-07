@@ -189,6 +189,40 @@ public class PlayerManager : Singleton<PlayerManager>
         }
     }
 
+    private static void ValidateInteractRequest(ushort playerId, Vector3 targetPos)
+    {
+        if(m_PlayerList.TryGetValue(playerId, out Player player))
+        {
+            Vector3 playerForward = player.transform.forward;
+            Vector3 dir = targetPos - player.transform.position;
+            float dot = Vector3.Dot(playerForward, dir.normalized);
+            IDLogger.Log($"Dot from player to Object {dot}");
+            bool valid = Vector3.Distance(player.transform.position, targetPos) < Constants.PLAYER_INTERACT_DISTANCE && dot > 0;
+            if (valid)
+            {
+                Collider[] hits = Physics.OverlapSphere(targetPos, 1);
+                foreach(var hit in hits)
+                {
+                    if (hit.GetComponent<IInteractable>() != null)
+                    {
+                        InteractType type = hit.GetComponent<IInteractable>().GetInteractType();
+                    }
+                }
+            }
+            player.ValidInteraction(player.Id, valid);
+            if (valid)
+            {
+                dir.y = 0;
+                Quaternion rot = Quaternion.LookRotation(dir);
+                player.transform.rotation = rot;
+            }
+        }
+        else
+        {
+            IDLogger.LogError($"Could not find player with Player ID: {playerId}");
+        }
+    }
+
     #region Messages
 
     //-------------------------------------------------------------------------------------//
@@ -279,6 +313,13 @@ public class PlayerManager : Singleton<PlayerManager>
         float look = msg.GetFloatInt();
         if (m_PlayerList.TryGetValue(fromClientId, out Player player))
             player.PlayerMovement.SetInput(move, look, jump, rightClick, leftClick);
+    }
+
+    [MessageHandler((ushort)ClientToServerId.RequestInteract)]
+    private static void ReceiveInteractRequest(ushort fromClientId, Message msg)
+    {
+        Vector3 targetPos = msg.GetVector3Int();
+        ValidateInteractRequest(fromClientId, targetPos);
     }
     #endregion
 }

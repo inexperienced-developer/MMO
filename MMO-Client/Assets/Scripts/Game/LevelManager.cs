@@ -65,8 +65,6 @@ public class LevelManager : Singleton<LevelManager>
     public void LoadLevel()
     {
         IDLogger.Log($"Starting Load Level Character Name: {GameManager.CharacterName}, Email: {GameManager.Email}, and Character");
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
         SceneManager.LoadScene(PERSISTENT_LEVEL, LoadSceneMode.Single);
         SceneManager.LoadScene(LOADING_LEVEL, LoadSceneMode.Additive);
     }

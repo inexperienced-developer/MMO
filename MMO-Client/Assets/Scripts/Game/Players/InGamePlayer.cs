@@ -5,15 +5,28 @@ using Riptide;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum InteractType : byte
+{
+    None = 0,
+    Harvest,
+}
+
 public class InGamePlayer : Player
 {
     public Gear Gear { get; private set; }
     public int GeoArea = -1;
 
     public PlayerMovement PlayerMovement { get; private set; }
+    public PlayerInteraction PlayerInteraction { get; private set; }
     public PlayerAnimation Anim { get; protected set; }
+    public PlayerStateMachine StateMachine { get; protected set; }
 
     protected Vector3 lastPos;
+
+    protected LayerMask m_NonPlayerLayer;
+
+    protected IInteractable m_LastInteractable;
+    public bool Interacting { get; protected set; }
 
     public override void Init(ushort id, string email = "")
     {
@@ -31,6 +44,11 @@ public class InGamePlayer : Player
                 Inventory = GetComponent<Inventory>() == null ? gameObject.AddComponent<Inventory>() : GetComponent<Inventory>();
             }
             Inventory.Init();
+            if (PlayerInteraction == null)
+            {
+                PlayerInteraction = GetComponent<PlayerInteraction>() == null ? gameObject.AddComponent<PlayerInteraction>() : GetComponent<PlayerInteraction>();
+            }
+            PlayerInteraction.Init();
         }
         if (PlayerMovement == null)
         {
@@ -42,7 +60,12 @@ public class InGamePlayer : Player
             Anim = GetComponent<PlayerAnimation>() == null ? gameObject.AddComponent<PlayerAnimation>() : GetComponent<PlayerAnimation>();
             Anim.Init();
         }
-
+        if(StateMachine == null)
+        {
+            StateMachine = GetComponent<PlayerStateMachine>() == null ? gameObject.AddComponent<PlayerStateMachine>() : GetComponent<PlayerStateMachine>();
+        }
+        StateMachine.Init();
+        m_NonPlayerLayer = PlayerManager.Instance.NonPlayerLayer;
     }
 
     private void FixedUpdate()
@@ -62,6 +85,56 @@ public class InGamePlayer : Player
         }
     }
 
+    public void SetInteractable(IInteractable interactable)
+    {
+        m_LastInteractable = interactable;
+    }
+
+    protected void Interact()
+    {
+        if(m_LastInteractable != null)
+        {
+            Vector3 pos = transform.position;
+            pos.y += 1;
+            RaycastHit hit;
+            if (Physics.Raycast(pos, transform.forward, out hit, Constants.PLAYER_INTERACT_DISTANCE, m_NonPlayerLayer))
+            {
+                if(hit.collider.GetComponent<IInteractable>() == m_LastInteractable)
+                {
+                    m_LastInteractable.Interact(this);
+                    InteractRequestToServer(m_LastInteractable.GetPosition());
+                    Interacting = true;
+                }
+            }
+            else
+            {
+                IDLogger.LogError($"Must be facing {m_LastInteractable} to interact with it");
+            }
+        }
+    }
+
+    public void StopInteracting()
+    {
+        if(m_LastInteractable != null)
+        {
+            m_LastInteractable.StopInteracting(this);
+            Interacting = false;
+        }
+    }
+
+    public void ReceiveHarvestReward(ushort[] reward)
+    {
+        string itemId = reward[0].ToString(Constants.ITEM_ID_FORMAT);
+        if (ItemManager.ItemDict.TryGetValue(itemId, out Item item))
+        {
+            Inventory.AddItem(item, reward[1], false);
+        }
+        else
+        {
+            IDLogger.LogError($"Can't find item with id {itemId}");
+        }
+    }
+
     #region Messages
     //-------------------------------------------------------------------------------------//
     //---------------------------- Message Sending ----------------------------------------//
@@ -73,10 +146,17 @@ public class InGamePlayer : Player
         Vector2 movement = PlayerMovement.MoveDir;
         bool jump = Controls.Jump;
 
-        byte input = Utilities.BoolsToByte(new bool[7] { movement.x > 0, movement.x < 0, movement.y > 0, movement.y < 0, jump, Controls.RightClick, Controls.LeftClick });
+        byte input = Utilities.BoolsToByte(new bool[7] { movement.x > 0, movement.x < 0, movement.y > 0, movement.y < 0, jump, Controls.RightClickHeld, Controls.LeftClick });
         msg.AddByte(input);
         msg.AddFloatInt(Controls.PlayerMovement.LookDir);
 
+        NetworkManager.Instance.Client.Send(msg);
+    }
+
+    protected void InteractRequestToServer(Vector3 targetPos)
+    {
+        Message msg = Message.Create(MessageSendMode.Reliable, ClientToServerId.RequestInteract);
+        msg.AddVector3Int(targetPos);
         NetworkManager.Instance.Client.Send(msg);
     }
 

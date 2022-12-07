@@ -308,7 +308,7 @@ namespace InexperiencedDeveloper.Firebase
                 if(item.GetType() == typeof(EquippableItem))
                 {
                     EquippableItem e = (EquippableItem)item;
-                    itemString += $"`{e.HasAbility}";
+                    //itemString += $"`{e.HasAbility}";
                 }
                 data.Add(item.Id.ToString(), itemString);
             }

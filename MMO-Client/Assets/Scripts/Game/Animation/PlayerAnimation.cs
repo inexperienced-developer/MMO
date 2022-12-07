@@ -25,15 +25,23 @@ public class PlayerAnimation : CharacterAnimation
 
     public override void SetMove(Vector3 move)
     {
-        IDLogger.Log($"Right: {move.x} Forward: {move.z}");
-        m_Anim.SetFloat("right", move.x);
-        m_Anim.SetFloat("forward", move.z);
+        m_Anim.SetFloat(Constants.ANIM_RIGHT, move.x);
+        m_Anim.SetFloat(Constants.ANIM_FWD, move.z);
     }
 
     public override void SetMove(Vector2 move)
     {
-        IDLogger.Log($"Right: {move.x} Forward: {move.y}");
-        m_Anim.SetFloat("right", move.x);
-        m_Anim.SetFloat("forward", move.y);
+        m_Anim.SetFloat(Constants.ANIM_RIGHT, move.x);
+        m_Anim.SetFloat(Constants.ANIM_FWD, move.y);
+    }
+
+    public void SetBool(string name, bool start)
+    {
+        m_Anim.SetBool(name, start);
+    }
+
+    public void PlayTrigger(string name)
+    {
+        m_Anim.SetTrigger(name);
     }
 }
