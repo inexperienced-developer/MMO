@@ -102,6 +102,35 @@ public class PlayerManager : Singleton<PlayerManager>
         GetLocalPlayer().SetInventory(bagIDs, itemIDs);
     }
 
+    private static void SetHarvestType(ushort id, HarvestType harvestType)
+    {
+        if(!m_PlayerList.TryGetValue(id, out Player player))
+        {
+            IDLogger.LogError($"Couldn't find player {id} in active player list.");
+            return;
+        }
+        InGamePlayer p = (InGamePlayer)player;
+        if(p == null)
+        {
+            IDLogger.LogError($"Error casting player to InGamePlayer");
+            return;
+        }
+        if(player == GetLocalPlayer())
+        {
+            if(p.StateMachine.HarvestType != harvestType)
+            {
+                p.StateMachine.ChangeState(PlayerState.Idle);
+                IDLogger.LogError($"HarvestType (client) does not match HarvestType (server).");
+                return;
+            } 
+        }
+        else
+        {
+            p.StateMachine.SetHarvestType(harvestType);
+            p.StateMachine.ChangeState(PlayerState.Harvesting);
+        }
+    }
+
     private static void SendHarvestReward(ushort[] reward)
     {
         InGamePlayer p = (InGamePlayer)GetLocalPlayer();
@@ -257,6 +286,14 @@ public class PlayerManager : Singleton<PlayerManager>
         {
             p.ReceiveMovement(pos, yRot, input);
         }
+    }
+
+    [MessageHandler((ushort)ServerToClientId.HandleHarvestType)]
+    private static void ReceiveHarvestType(Message msg)
+    {
+        ushort id = msg.GetUShort();
+        HarvestType harvestType = (HarvestType)msg.GetByte();
+        SetHarvestType(id, harvestType);
     }
 
     [MessageHandler((ushort)ServerToClientId.HarvestMsg)]

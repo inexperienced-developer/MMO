@@ -4,6 +4,7 @@ using InexperiencedDeveloper.MMO.Data;
 using InexperiencedDeveloper.Utils;
 using InexperiencedDeveloper.Utils.Log;
 using Riptide;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -42,6 +43,16 @@ public class PlayerManager : Singleton<PlayerManager>
             }
         }
         return players;
+    }
+
+    public void SendToNearbyPlayers(Player fromPlayer, Action<ushort> func)
+    {
+        List<Player> nearbyPlayers = GetNearbyPlayers(fromPlayer.transform.position);
+        foreach(var p in nearbyPlayers)
+        {
+            if (p == null) continue;
+            func(p.Id);
+        }
     }
 
     //private static void Spawn(ushort id, string username)
@@ -193,22 +204,13 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         if(m_PlayerList.TryGetValue(playerId, out Player player))
         {
+            //Check to see if interactable is in front of player and close enough to interact
             Vector3 playerForward = player.transform.forward;
             Vector3 dir = targetPos - player.transform.position;
             float dot = Vector3.Dot(playerForward, dir.normalized);
             IDLogger.Log($"Dot from player to Object {dot}");
             bool valid = Vector3.Distance(player.transform.position, targetPos) < Constants.PLAYER_INTERACT_DISTANCE && dot > 0;
-            if (valid)
-            {
-                Collider[] hits = Physics.OverlapSphere(targetPos, 1);
-                foreach(var hit in hits)
-                {
-                    if (hit.GetComponent<IInteractable>() != null)
-                    {
-                        InteractType type = hit.GetComponent<IInteractable>().GetInteractType();
-                    }
-                }
-            }
+
             player.ValidInteraction(player.Id, valid);
             if (valid)
             {
@@ -221,6 +223,21 @@ public class PlayerManager : Singleton<PlayerManager>
         {
             IDLogger.LogError($"Could not find player with Player ID: {playerId}");
         }
+    }
+
+    private static void SetPlayerState(ushort playerId, PlayerState state)
+    {
+
+    }
+
+    private static void SetHarvestType(ushort playerId, HarvestType harvestType)
+    {
+        if(!m_PlayerList.TryGetValue(playerId, out Player player))
+        {
+            IDLogger.LogError($"Could not find player with Player ID: {playerId}");
+            return;
+        }
+        player.StateMachine.SetHarvestType(harvestType);
     }
 
     #region Messages
@@ -321,5 +338,13 @@ public class PlayerManager : Singleton<PlayerManager>
         Vector3 targetPos = msg.GetVector3Int();
         ValidateInteractRequest(fromClientId, targetPos);
     }
+
+    [MessageHandler((ushort)ClientToServerId.SendHarvestType)]
+    private static void ReceivePlayerHarvestType(ushort fromClientId, Message msg) 
+    {
+        HarvestType type = (HarvestType)msg.GetByte();
+        SetHarvestType(fromClientId, type);
+    }
+
     #endregion
 }

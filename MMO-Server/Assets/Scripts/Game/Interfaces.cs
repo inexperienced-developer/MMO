@@ -16,5 +16,4 @@ public interface IInteractable
     void Interact(Player player);
     void StopInteracting(Player player);
     Vector3 GetPosition();
-    InteractType GetInteractType();
 }

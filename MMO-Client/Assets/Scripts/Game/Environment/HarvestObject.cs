@@ -61,7 +61,7 @@ public class HarvestObject : MonoBehaviour, IInteractable, IDamageable
                 break;
             }
         }
-        player.Anim.SetBool(Constants.ANIM_B_INTERACTING, true);
+        
     }
 
     public virtual void StopInteracting(InGamePlayer player)
@@ -74,7 +74,6 @@ public class HarvestObject : MonoBehaviour, IInteractable, IDamageable
                 break;
             }
         }
-        player.Anim.SetBool(Constants.ANIM_B_INTERACTING, false);
     }
 
     public Vector3 GetPosition()

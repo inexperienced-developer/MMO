@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da0fddacfd493854ba4c7c8f19a6af06, type: 3}
   m_Name: 000004-HARVEST-WoodLog
   m_EditorClassIdentifier: 
-  Id: 0
-  ItemName: 
+  Id: 4
+  ItemName: Wood Log
   Slot: 0

@@ -18,14 +18,14 @@ public class PlayerInteraction : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Constants.MAX_MOUSE_RAYCAST_DISTANCE))
         {
-            IDLogger.Log($"Raycast hit {hit.collider.gameObject.name}");
             //If selectable object, select
             if (m_Player.Controls.LeftClick) return;
             //If interactable, interact
             if (m_Player.Controls.RightClickPressed)
             {
+                IDLogger.Log($"Raycast hit {hit.collider.gameObject.name}");
                 IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-                interactable?.Interact(m_Player);
+                if (interactable != null) m_Player.Interact(interactable);
             }
         }
     }

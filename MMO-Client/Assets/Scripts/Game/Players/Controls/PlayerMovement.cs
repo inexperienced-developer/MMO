@@ -90,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Change Player state
-        PlayerState state = dir.magnitude >= 0.01f ? PlayerState.Moving : m_Player.StateMachine.State;
+        PlayerState state = dir.magnitude >= 0.01f ? PlayerState.Moving : m_Player.StateMachine.State != PlayerState.Moving ? m_Player.StateMachine.State : PlayerState.Idle;
         if (state != m_Player.StateMachine.State) m_Player.StateMachine.ChangeState(state);
 
         //Set Move Anim

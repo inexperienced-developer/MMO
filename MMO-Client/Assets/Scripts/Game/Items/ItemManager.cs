@@ -17,7 +17,7 @@ public class ItemManager : Singleton<ItemManager>
     protected override void Awake()
     {
         base.Awake();
-        Addressables.LoadAssetsAsync<Item>(m_ItemLabelReference, delegate { IDLogger.Log("Loaded Item Dict."); }).Completed += BuildDict;
+        Addressables.LoadAssetsAsync<Item>(m_ItemLabelReference, null).Completed += BuildDict;
     }
 
     private void BuildDict(AsyncOperationHandle<IList<Item>> obj)

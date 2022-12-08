@@ -26,6 +26,7 @@ public class InGamePlayer : Player
     protected LayerMask m_NonPlayerLayer;
 
     protected IInteractable m_LastInteractable;
+    protected IInteractable m_CurrentInteractable;
     public bool Interacting { get; protected set; }
 
     public override void Init(ushort id, string email = "")
@@ -90,36 +91,41 @@ public class InGamePlayer : Player
         m_LastInteractable = interactable;
     }
 
-    protected void Interact()
+    public void Interact(IInteractable interactable)
     {
-        if(m_LastInteractable != null)
+        IDLogger.LogError($"Interactable: {interactable}");
+        if(interactable != null)
         {
             Vector3 pos = transform.position;
             pos.y += 1;
             RaycastHit hit;
+            Debug.DrawRay(pos, transform.forward, Color.red, 10);
             if (Physics.Raycast(pos, transform.forward, out hit, Constants.PLAYER_INTERACT_DISTANCE, m_NonPlayerLayer))
             {
-                if(hit.collider.GetComponent<IInteractable>() == m_LastInteractable)
+                if(hit.collider.GetComponent<IInteractable>() == interactable)
                 {
-                    m_LastInteractable.Interact(this);
-                    InteractRequestToServer(m_LastInteractable.GetPosition());
+                    interactable.Interact(this);
+                    InteractRequestToServer(interactable.GetPosition());
                     Interacting = true;
+                    Anim.SetBool(Constants.ANIM_B_INTERACTING, true);
+                    m_CurrentInteractable = interactable;
                 }
             }
             else
             {
-                IDLogger.LogError($"Must be facing {m_LastInteractable} to interact with it");
+                IDLogger.LogError($"Must be facing {interactable} to interact with it");
             }
         }
     }
 
     public void StopInteracting()
     {
-        if(m_LastInteractable != null)
-        {
-            m_LastInteractable.StopInteracting(this);
-            Interacting = false;
-        }
+        Anim.SetBool(Constants.ANIM_B_INTERACTING, false);
+        if (m_CurrentInteractable == null) return;
+        IInteractable interactable = m_CurrentInteractable;
+        m_CurrentInteractable = null;
+        interactable.StopInteracting(this);
+        Interacting = false;
     }
 
     public void ReceiveHarvestReward(ushort[] reward)

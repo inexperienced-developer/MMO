@@ -1,4 +1,5 @@
 using InexperiencedDeveloper.Utils.Log;
+using Riptide;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public enum HarvestType : byte
 {
     None = 0,
     ChopTree,
-    Mining
+    Mining,
 }
 
 public class PlayerStateMachine : MonoBehaviour
@@ -24,6 +25,14 @@ public class PlayerStateMachine : MonoBehaviour
     public HarvestType HarvestType { get; private set; }
 
     private bool m_AnimPlayed;
+    private bool m_ShouldBeInteracting
+    {
+        get
+        {
+            //Add all interact states
+            return State == PlayerState.Harvesting;
+        }
+    }
 
     public void Init()
     {
@@ -38,7 +47,6 @@ public class PlayerStateMachine : MonoBehaviour
             case PlayerState.Idle:
                 break;
             case PlayerState.Moving:
-                Moving();
                 break;
             case PlayerState.Harvesting:
                 Harvest();
@@ -55,13 +63,25 @@ public class PlayerStateMachine : MonoBehaviour
             IDLogger.LogWarning("Cannot harvest while moving.");
             return;
         }
+        IDLogger.Log($"Changed state from {State} to {newState}");
         State = newState;
         m_AnimPlayed = false;
-    }
-
-    private void Moving()
-    {
-        if(m_Player.Interacting) m_Player.StopInteracting();
+        if (m_Player.IsLocal)
+        {
+            IDLogger.Log($"Interacting: {m_Player.Interacting}");
+            IDLogger.Log($"Should be  Interacting: {m_ShouldBeInteracting}");
+            if (m_Player.Interacting && !m_ShouldBeInteracting)
+            {
+                m_Player.StopInteracting();
+                IDLogger.Log("Stopped Interacting");
+            }
+        }
+        else
+        {
+            if(!m_ShouldBeInteracting)
+                m_Player.StopInteracting();
+        }
+        m_Player.Anim.SetBool(Constants.ANIM_B_INTERACTING, m_ShouldBeInteracting);
     }
 
     public void SetHarvestType(HarvestType newType)
@@ -92,5 +112,22 @@ public class PlayerStateMachine : MonoBehaviour
         }
         m_Player.Anim.PlayTrigger(trigger);
         m_AnimPlayed = true;
+
+        if(m_Player.IsLocal)
+            SendHarvestType();
     }
+
+    #region Messages
+    //-------------------------------------------------------------------------------------//
+    //---------------------------- Message Sending ----------------------------------------//
+    //-------------------------------------------------------------------------------------//
+
+    private void SendHarvestType()
+    {
+        Message msg = Message.Create(MessageSendMode.Reliable, ClientToServerId.SendHarvestType);
+        msg.AddByte((byte)HarvestType);
+        NetworkManager.Instance.Client.Send(msg);
+    }
+
+    #endregion
 }

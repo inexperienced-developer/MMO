@@ -1,6 +1,8 @@
 using InexperiencedDeveloper.Core;
 using Riptide;
 using Riptide.Utils;
+using System;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -12,8 +14,10 @@ public enum ServerToClientId : ushort
     SpawnPlayer,
     SendInventory,
     UpdatePosition,
-    Interact,
+    ValidInteract,
+    HandleHarvestType,
     HarvestMsg,
+    SendState,
 }
 
 public enum ClientToServerId : ushort
@@ -25,6 +29,8 @@ public enum ClientToServerId : ushort
     RequestSpawn,
     MoveRequest,
     RequestInteract,
+    SendHarvestType,
+    ReceiveState,
 }
 
 public class NetworkManager : Singleton<NetworkManager>
@@ -67,4 +73,6 @@ public class NetworkManager : Singleton<NetworkManager>
         msg.AddUShort(CurrentTick);
         Server.SendToAll(msg);
     }
+
+
 }

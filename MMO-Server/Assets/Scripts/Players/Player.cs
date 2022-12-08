@@ -9,13 +9,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-
-public enum InteractType : byte
-{
-    None = 0,
-    Harvest,
-}
-
 public class Player : MonoBehaviour
 {
     public ushort Id { get; private set; }
@@ -211,10 +204,11 @@ public class Player : MonoBehaviour
 
     public void ValidInteraction(ushort toId, bool valid)
     {
-        Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.Interact);
+        Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.ValidInteract);
         msg.AddBool(valid);
         NetworkManager.Instance.Server.Send(msg, toId);
     }
+
 
     public void SendReward(ushort toId, ushort[] reward)
     {

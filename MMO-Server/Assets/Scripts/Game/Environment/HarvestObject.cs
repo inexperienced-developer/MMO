@@ -11,7 +11,6 @@ public class HarvestObject : MonoBehaviour, IInteractable, IDamageable
     [SerializeField] protected float m_HarvestTimer = 5;
     [SerializeField] protected HarvestReward[] m_HarvestRewards;
     [SerializeField] protected ushort m_DamagePerTick = 5;
-    [SerializeField] protected InteractType m_InteractType;
     public float HarvestTimer => m_HarvestTimer;
     protected Player[] m_Interactors;
 
@@ -86,12 +85,6 @@ public class HarvestObject : MonoBehaviour, IInteractable, IDamageable
     public Vector3 GetPosition()
     {
         return transform.position;
-    }
-
-
-    public InteractType GetInteractType()
-    {
-        return m_InteractType;
     }
 
     public void SendItem(Player player)
