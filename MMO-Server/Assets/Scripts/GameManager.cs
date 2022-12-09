@@ -13,6 +13,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Transform m_SpawnPoint;
     public Transform SpawnPoint => m_SpawnPoint;
 
+
     [ContextMenu("Check length Item Dict")]
     public void CheckLen()
     {

@@ -16,6 +16,10 @@ public class PlayerManager : Singleton<PlayerManager>
 {
     private static Dictionary<ushort, Player> m_PlayerList = new();
 
+    //Layer Options
+    [SerializeField] protected LayerMask m_NonPlayerLayer;
+    public LayerMask NonPlayerLayer => m_NonPlayerLayer;
+
     public static Player GetPlayerById(ushort id)
     {
         if (m_PlayerList.TryGetValue(id, out Player player))
@@ -26,6 +30,8 @@ public class PlayerManager : Singleton<PlayerManager>
             return null;
         }
     }
+
+
 
     public static void RemovePlayerFromList(Player sender)
     {
@@ -208,15 +214,14 @@ public class PlayerManager : Singleton<PlayerManager>
             Vector3 playerForward = player.transform.forward;
             Vector3 dir = targetPos - player.transform.position;
             float dot = Vector3.Dot(playerForward, dir.normalized);
-            IDLogger.Log($"Dot from player to Object {dot}");
             bool valid = Vector3.Distance(player.transform.position, targetPos) < Constants.PLAYER_INTERACT_DISTANCE && dot > 0;
-
             player.ValidInteraction(player.Id, valid);
             if (valid)
             {
                 dir.y = 0;
                 Quaternion rot = Quaternion.LookRotation(dir);
                 player.transform.rotation = rot;
+                player.Interact(targetPos);
             }
         }
         else

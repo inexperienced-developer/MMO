@@ -70,6 +70,7 @@ public class HarvestObject : MonoBehaviour, IInteractable, IDamageable
 
     public virtual void StopInteracting(Player player)
     {
+        IDLogger.Log("Stopping interact");
         for (int i = 0; i < m_Interactors.Length; i++)
         {
             if (m_Interactors[i] == player)
@@ -79,7 +80,6 @@ public class HarvestObject : MonoBehaviour, IInteractable, IDamageable
             }
         }
         player.StateMachine.ChangeState(PlayerState.Idle);
-        player.StopInteract();
     }
 
     public Vector3 GetPosition()

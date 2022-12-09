@@ -102,32 +102,39 @@ public class PlayerManager : Singleton<PlayerManager>
         GetLocalPlayer().SetInventory(bagIDs, itemIDs);
     }
 
+    private static void SendValidInteract(bool valid)
+    {
+        InGamePlayer p = (InGamePlayer)GetLocalPlayer();
+        if (!valid) p.StopInteracting();
+    }
+
     private static void SetHarvestType(ushort id, HarvestType harvestType)
     {
-        if(!m_PlayerList.TryGetValue(id, out Player player))
+        if(!m_InGamePlayerList.TryGetValue(id, out InGamePlayer player))
         {
             IDLogger.LogError($"Couldn't find player {id} in active player list.");
             return;
         }
-        InGamePlayer p = (InGamePlayer)player;
-        if(p == null)
+        if(player == null)
         {
             IDLogger.LogError($"Error casting player to InGamePlayer");
             return;
         }
         if(player == GetLocalPlayer())
         {
-            if(p.StateMachine.HarvestType != harvestType)
+            IDLogger.Log($"Local Harvest Type: {player.StateMachine.HarvestType}");
+            IDLogger.Log($"Server Harvest Type: {harvestType}");
+            if (player.StateMachine.HarvestType != harvestType)
             {
-                p.StateMachine.ChangeState(PlayerState.Idle);
+                player.StateMachine.ChangeState(PlayerState.Idle);
                 IDLogger.LogError($"HarvestType (client) does not match HarvestType (server).");
                 return;
             } 
         }
         else
         {
-            p.StateMachine.SetHarvestType(harvestType);
-            p.StateMachine.ChangeState(PlayerState.Harvesting);
+            player.StateMachine.SetHarvestType(harvestType);
+            player.StateMachine.ChangeState(PlayerState.Harvesting);
         }
     }
 
@@ -287,12 +294,19 @@ public class PlayerManager : Singleton<PlayerManager>
             p.ReceiveMovement(pos, yRot, input);
         }
     }
+    [MessageHandler((ushort)ServerToClientId.ValidInteract)]
+    private static void ReceiveValidInteract(Message msg)
+    {
+        bool valid = msg.GetBool();
+        SendValidInteract(valid);
+    }
 
     [MessageHandler((ushort)ServerToClientId.HandleHarvestType)]
     private static void ReceiveHarvestType(Message msg)
     {
         ushort id = msg.GetUShort();
         HarvestType harvestType = (HarvestType)msg.GetByte();
+        IDLogger.Log($"Received Harvest Type: {harvestType}");
         SetHarvestType(id, harvestType);
     }
 

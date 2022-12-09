@@ -20,8 +20,9 @@ public class Player : MonoBehaviour
     public PlayerMovement PlayerMovement { get; private set; }
     public CharacterController Controller { get; private set; }
     public PlayerStateMachine StateMachine { get; private set; }
+    public bool Interacting { get; private set; }
 
-    [SerializeField] protected LayerMask m_NonPlayerLayer;
+    private IInteractable m_CurrentInteractable;
 
     private void OnDestroy()
     {
@@ -38,11 +39,13 @@ public class Player : MonoBehaviour
     public void InitSpawn(Vector3 pos, Quaternion rot)
     {
         PlayerMovement = PlayerMovement == null ? gameObject.AddComponent<PlayerMovement>() : PlayerMovement;
+        PlayerMovement.Init();
         Controller = GetComponent<CharacterController>();
         Controller.center = Constants.CHARACTER_CONTROLLER_CAPSULE_CENTER;
         transform.position = pos;
         transform.rotation = rot;
         StateMachine = StateMachine == null ? gameObject.AddComponent<PlayerStateMachine>() : StateMachine;
+        StateMachine.Init();
     }
 
 
@@ -63,19 +66,33 @@ public class Player : MonoBehaviour
         CurrentInventoryData = inventory;
     }
 
-    public void Interact()
+    public void Interact(Vector3 interactPos)
     {
-        RaycastHit[] hits = Physics.RaycastAll(transform.position, transform.forward, 5, m_NonPlayerLayer);
+        //RaycastHit[] hits = Physics.RaycastAll(transform.position, transform.forward, 5, m_NonPlayerLayer);
+        Collider[] hits = Physics.OverlapSphere(interactPos, 1, PlayerManager.Instance.NonPlayerLayer, QueryTriggerInteraction.Ignore);
         if (hits.Length > 0)
         {
-            IInteractable obj = hits[0].collider.GetComponent<IInteractable>();
-            obj.Interact(this);
+            foreach(var hit in hits)
+            {
+                IInteractable obj = hit.GetComponent<IInteractable>() == null ? hit.GetComponentInParent<IInteractable>(true) : hit.GetComponent<IInteractable>();
+                if (obj != null)
+                {
+                    m_CurrentInteractable = obj;
+                    Interacting = true;
+                    obj.Interact(this);
+                    break;
+                }
+            }
         }
     }
 
     public void StopInteract()
     {
-
+        if (m_CurrentInteractable == null) return;
+        IInteractable i = m_CurrentInteractable;
+        m_CurrentInteractable = null;
+        Interacting = false;
+        i.StopInteracting(this);
     }
 
     //public async Task SetGear(List<float> gearData)

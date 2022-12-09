@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
         Init();
     }
 
-    private void Init()
+    public void Init()
     {
         m_Controller = m_Controller == null ? GetComponent<CharacterController>() : m_Controller;
         m_Player = m_Player == null ? GetComponent<Player>() : m_Player;
@@ -75,7 +75,6 @@ public class PlayerMovement : MonoBehaviour
         var nearbyPlayers = PlayerManager.Instance.GetNearbyPlayers(transform.position);
         foreach (var player in nearbyPlayers)
         {
-            IDLogger.Log($"{gameObject.name} -- Sending details to {player.Id}");
             SendMovement(player.Id);
         }
     }

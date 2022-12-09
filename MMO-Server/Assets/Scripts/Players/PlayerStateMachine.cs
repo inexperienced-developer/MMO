@@ -24,6 +24,7 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerState State { get; private set; }
     public HarvestType HarvestType { get; private set; }
 
+    private bool m_ShouldBeInteracting => State == PlayerState.Harvesting;
     //Harvest
     public HarvestObject CurrentHarvestObj { get; private set; }
     private float m_RunningHarvestTimer, m_CurrentHarvestTimer;
@@ -52,6 +53,9 @@ public class PlayerStateMachine : MonoBehaviour
     public void ChangeState(PlayerState newState)
     {
         State = newState;
+        m_RunningHarvestTimer = 0;
+        if (m_Player.Interacting && !m_ShouldBeInteracting)
+            m_Player.StopInteract();
         PlayerManager.Instance.SendToNearbyPlayers(m_Player, SendState);
     }
 
@@ -104,6 +108,7 @@ public class PlayerStateMachine : MonoBehaviour
     private void SendHarvestType(ushort toId)
     {
         Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.HandleHarvestType);
+        IDLogger.Log($"Sending Harvest Type: {HarvestType}");
         msg.AddUShort(m_Player.Id); // Who is harvesting
         msg.AddByte((byte)HarvestType); // Their type
         NetworkManager.Instance.Server.Send(msg, toId);

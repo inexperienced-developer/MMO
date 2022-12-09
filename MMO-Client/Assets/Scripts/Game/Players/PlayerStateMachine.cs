@@ -125,6 +125,7 @@ public class PlayerStateMachine : MonoBehaviour
     private void SendHarvestType()
     {
         Message msg = Message.Create(MessageSendMode.Reliable, ClientToServerId.SendHarvestType);
+        IDLogger.Log($"Sending harvest type: {HarvestType}");
         msg.AddByte((byte)HarvestType);
         NetworkManager.Instance.Client.Send(msg);
     }

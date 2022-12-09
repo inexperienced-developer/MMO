@@ -73,7 +73,7 @@ public class NetworkManager : Singleton<NetworkManager>
 
     private void DidDisconnect(object sender, EventArgs e)
     {
-        LobbyUIManager.Instance.BackToLogin();
+        LevelManager.Instance.DisconnectPlayer();
     }
 
     private void OnApplicationQuit()

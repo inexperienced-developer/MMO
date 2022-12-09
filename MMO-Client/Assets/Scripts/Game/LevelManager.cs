@@ -69,6 +69,11 @@ public class LevelManager : Singleton<LevelManager>
         SceneManager.LoadScene(LOADING_LEVEL, LoadSceneMode.Additive);
     }
 
+    public void DisconnectPlayer()
+    {
+        SceneManager.LoadScene(LOGIN_LEVEL, LoadSceneMode.Single);
+    }
+
     public void SetLevelToLoad(int level)
     {
         m_LevelToLoad = level;

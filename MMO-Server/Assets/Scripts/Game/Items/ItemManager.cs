@@ -10,15 +10,26 @@ public class ItemManager : Singleton<ItemManager>
 {
     public static Dictionary<string, Item> Items {get; private set;} = new Dictionary<string, Item>();
     [SerializeField] private AssetLabelReference m_ItemLabelReference;
+    private int attempts = 0;
 
-    protected override void Awake()
+    private void Start()
     {
-        base.Awake();
         Addressables.LoadAssetsAsync<Item>(m_ItemLabelReference, null).Completed += BuildDict;
     }
 
     private void BuildDict(AsyncOperationHandle<IList<Item>> obj)
     {
+        if(obj.Result == null)
+        {
+            IDLogger.LogError($"Item list is null");
+            if (attempts < 5)
+            {
+                attempts++;
+                Addressables.LoadAssetsAsync<Item>(m_ItemLabelReference, null).Completed += BuildDict;
+                return;
+            }
+            return;
+        }
         IDLogger.Log($"Building dict");
         List<Item> items = obj.Result.ToList();
         foreach(var item in items)

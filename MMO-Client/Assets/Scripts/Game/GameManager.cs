@@ -10,7 +10,14 @@ public class GameManager : Singleton<GameManager>
 {
     [Header("Prefabs")]
     [SerializeField] private Transform m_SpawnPoint;
-    public Transform SpawnPoint => m_SpawnPoint;
+    public Transform SpawnPoint
+    {
+        get
+        {
+            m_SpawnPoint = m_SpawnPoint == null ? GameObject.Find("SpawnPoint").transform : m_SpawnPoint;
+            return m_SpawnPoint;
+        }
+    }
     [SerializeField] private GameObject m_CharacterPrefab;
     [SerializeField] private GameObject m_LocalCameraPrefab;
     public GameObject LocalCameraPrefab => m_LocalCameraPrefab;
@@ -20,8 +27,6 @@ public class GameManager : Singleton<GameManager>
     public static string Email { get; private set; }
     public static string CharacterName { get; private set; }
     public const byte NUM_OF_SKILLS = 9;
-
-
     
 
     protected override void Awake()
